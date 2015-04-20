@@ -1,0 +1,18 @@
+.outer-div{
+	background-color: green;
+	width:200px;
+	height:100px;
+}
+
+.container-div{
+	background-color: yellow;
+	width:200px;
+	height:100px;	
+}
+
+.simple-div{
+	background-color: blue;
+	width:40px;
+	height:20px;
+	margin:10px 10px;
+}

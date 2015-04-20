@@ -13,25 +13,33 @@ var $EO = function  ($) {
 		};
 		//custom on function for event listing
 		this.on=function (eventName, dynamicElement, callback) {
-			//register events normally
-			if(typeof dynamicElement !== "function")
-				$(this.selector).on(eventName, dynamicElement, $.proxy(callback,this));
-			else
-				$(this.selector).on(eventName, $.proxy(callback,this));	
-
 
 			if(typeof dynamicElement === "function"){
 				callback=dynamicElement;
 				dynamicElement=null;
 			}
 
-			var previousEventResponse = helpers.findFromStore(this.selector, eventName, dynamicElement); //return the previous response object if you have it
-			if(previousEventResponse){
-				setTimeout(function () {
-					callback.apply(this,previousEventResponse);
-				}.bind(this),20);
-				
-			}
+			//register events normally
+			if(dynamicElement)
+				$(this.selector).on(eventName, dynamicElement, callback);
+			else
+				$(this.selector).on(eventName, callback);	
+	
+
+			var allElements = $(this.selector);
+			for (var i = allElements.length - 1; i >= 0; i--) {
+				var selector=allElements[i];
+				var previousEventResponse = helpers.findFromStore(selector, eventName, dynamicElement); //return the previous response object if you have it
+				if(previousEventResponse){
+					(function (selector,previousEventResponse) {
+						setTimeout(function () {
+							callback.apply(selector,previousEventResponse);
+						}.bind(this),0);
+					})(selector,previousEventResponse);
+									
+				}
+			};
+			
 		}
 	};
 
@@ -78,7 +86,12 @@ var $EO = function  ($) {
 
 		//find an event against a given 
 		findEvent:function (selectorName,eventName) {
-			return Store.eventListeners[selectorName+"$EO$"+eventName];
+			var listenersList = Store.eventListeners;
+			for (var i = listenersList.length - 1; i >= 0; i--) {
+				var eventObj = listenersList[i]
+				if(eventObj.id === selectorName+"$EO$"+eventName)
+					return eventObj;
+			};			
 		},
 
 		saveEvent:function (selectorName,eventName, newEventListenerObj) {
@@ -86,7 +99,7 @@ var $EO = function  ($) {
 			Store.eventListeners.push(newEventListenerObj);
 		},
 
-		findFromStore:function (selectorName, eventName, dynamicElement) {
+		findFromStore:function (selector, eventName, dynamicElement) {
 			var filteredEvents = $.grep(Store.eventResponseStack,function (eventObj, i) {
 				return eventObj.eventName === eventName;
 			}); 
@@ -95,7 +108,7 @@ var $EO = function  ($) {
 				var obj = filteredEvents[i];
 				//if(!dynamicElement){
 					//if same node or a child node, than it's true
-					if($(obj.e.target).is(selectorName) || $(selectorName).parent(obj.e.target).length){
+					if($(obj.e.target).is(selector) || $(selector).parent(obj.e.target).length){
 						eventResponse = obj.arguments;
 						return eventResponse;
 					}
