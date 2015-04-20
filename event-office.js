@@ -33,6 +33,7 @@ var $EO = function  ($) {
 				if(previousEventResponse){
 					(function (selector,previousEventResponse) {
 						setTimeout(function () {
+							console.log("The event "+previousEventResponse[0].type+"was already triggered");
 							callback.apply(selector,previousEventResponse);
 						}.bind(this),0);
 					})(selector,previousEventResponse);
@@ -108,7 +109,7 @@ var $EO = function  ($) {
 				var obj = filteredEvents[i];
 				//if(!dynamicElement){
 					//if same node or a child node, than it's true
-					if($(obj.e.target).is(selector) || $(selector).parent(obj.e.target).length){
+					if($(obj.e.target).is(selector) || $(selector).children(obj.e.target).length){
 						eventResponse = obj.arguments;
 						return eventResponse;
 					}

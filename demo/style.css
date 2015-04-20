@@ -1,16 +1,16 @@
-.outer-div{
+.green-div{
 	background-color: green;
 	width:200px;
 	height:100px;
 }
 
-.container-div{
+.yellow-div{
 	background-color: yellow;
 	width:200px;
 	height:100px;	
 }
 
-.simple-div{
+.blue-div{
 	background-color: blue;
 	width:40px;
 	height:20px;
